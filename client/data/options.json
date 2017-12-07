@@ -1,0 +1,96 @@
+{
+	"type": "Lumen Astrum 1.0",
+	"columns": ["structureName", "title", "prereq"],
+	"key": "name",
+	"rows": [["Command Base", "Main Base. Defend yours while destroying opponent's.", 400, 250, 0, 2, 0, [
+				{
+					"title": "Build Barracks",
+					"prereq": [],
+					"type": "Structure",
+					"description": "{Barracks}",
+					"icon": "{Barracks}",
+					"command": "build-Barracks"
+				},
+				{
+					"title": "Build AI Core",
+					"prereq": [],
+					"type": "Structure",
+					"description": "{AI Core}",
+					"icon": "{AI Core}",
+					"command": "build-AI Core"
+				},
+				{
+					"title": "Build Factory",
+					"prereq": [],
+					"type": "Structure",
+					"description": "{Factory}",
+					"icon": "{Factory}",
+					"command": "build-Factory"
+				},
+				{
+					"title": "Build Scouting Tower",
+					"prereq": [],
+					"type": "Structure",
+					"description": "{Scouting Tower}",
+					"icon": "{Scouting Tower}",
+					"command": "build-Scouting Tower"
+				},
+				{
+					"title": "Build Artillery Bay",
+					"prereq": [],
+					"type": "Structure",
+					"description": "{Artillery Bay}",
+					"icon": "{Artillery Bay}",
+					"command": "build-Artillery Bay"
+				},
+				{
+					"title": "Build Automation Factory",
+					"prereq": [],
+					"type": "Structure",
+					"description": "{Automation Factory}",
+					"icon": "{Automation Factory}",
+					"command": "build-Automation Factory"
+				},
+				{
+					"title": "Build Armory",
+					"prereq": [],
+					"type": "Structure",
+					"description": "{Armory}",
+					"icon": "{Armory}",
+					"command": "build-Armory"
+				},
+				{
+					"title": "Build Tech Lab",
+					"prereq": ["Armory"],
+					"type": "Structure",
+					"description": "{Tech Lab}",
+					"icon": "{Tech Lab}",
+					"command": "build-Tech Lab"
+				},
+				{
+					"title": "Build Military Academy",
+					"prereq": ["Tech Lab"],
+					"type": "Structure",
+					"description": "{Military Academy}",
+					"icon": "{Military Academy}",
+					"command": "build-Military Academy"
+				},
+				{
+					"title": "Build Mech Facility",
+					"prereq": [],
+					"type": "Structure",
+					"description": "{Mech Facility}",
+					"icon": "{Mech Facility}",
+					"command": "build-Mech Facility"
+				},
+				{
+					"title": "Build Spec Ops Facility",
+					"prereq": [],
+					"type": "Structure",
+					"description": "{Spec Ops Facility}",
+					"icon": "{Spec Ops Facility}",
+					"command": "build-Spec Ops Facility"
+				}
+			]
+	]]
+}

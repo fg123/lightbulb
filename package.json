@@ -1,0 +1,17 @@
+{
+  "name": "lightbulb",
+  "version": "1.0.0",
+  "description": "Web interface for Relational DB in JSON",
+  "author": "Felix Guo",
+  "license": "ISC",
+  "dependencies": {
+	"dotenv": "^4.0.0",
+	"express": "^4.15.4",
+	"pg": "^6.1.0",
+	"socket.io": "^2.0.3"
+  },
+  "devDependencies": {
+	"jshint": "^2.9.5"
+  },
+  "main": "index.js"
+}
