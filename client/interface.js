@@ -1,63 +1,134 @@
-const datasetNames = ["structures"];
-var database = {};
-var selectedDataset = null;
-$('#datasetSelector').change(function () {
-	if (this.selectedIndex == 0) {
-		selectedDataset = null;
-		$(".editor").html("");
+var state = undefined;
+var selectedDatabase = undefined;
+var selectedDataset = undefined;
+
+var states = {
+	onload: {
+		onEntry: function () {
+			// Get Databases From Server
+			makeServerRequest("/db-list", {}, function (data) {
+				refreshDBList(data);
+			});
+			$("#databaseName").text("Select Database");
+		},
+		onExit: function () {
+
+		}
+	},
+	hasSelectedDatabase: {
+		onEntry: function () {
+			$("#databaseName").text(pathToName(selectedDatabase.path));
+			$('ul.tabs').tabs('select_tab', 'classes');
+
+			$("ul#classList").html(`<li>
+										<div class="collapsible-header"><i class="material-icons">create</i>Create</div>
+									</li>`);
+			selectedDatabase.classes.forEach(function (element) {
+				$("ul#classList").append(`
+					<li>
+						<div class="collapsible-header"><i class="material-icons">list</i>${element.name}</div>
+						<div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
+					</li>`);
+			});
+		},
+		onExit: function () {
+
+		}
+	},
+	hasSelectedDataset: {
+		onEntry: function () {
+
+		},
+		onExit: function () {
+
+		}
 	}
-	else {
-		selectedDataset = this.value;
-		loadEditor(database[this.value]);
+};
+
+function changeState(newState) {
+	if (state) {
+		state.onExit();
 	}
-});
-function loadEditor(schemaSet) {
-	// Load Details
-	$(".editor").html("");
-	$(".editor").append(`
-		<div class="info">
-			<h4>${selectedDataset}</h4>
-			<p><b>Type: </b>${schemaSet.schema}</p>
-			<p><b>Primary Key: </b>${schemaSet.key}</p>
-		</div>
-	`);
-	var table = "<table class='striped bordered'>";
-	// Header Row
-	table += `<thead><tr>${schemaSet.columns.reduce(function (acc, curr) {
-		return acc + "<td>" + curr + "</td>";
-	}, "")}</tr></thead>`;
-	table += `<tbody>${
-		schemaSet.rows.reduce(function (acc, curr) {
-		return acc + `<tr>${
-			curr.reduce(function (acc, curr) {
-				if (Array.isArray(curr)) {
-					return acc + "<td>" + "Edit List" + "</td>";
-				} else {
-					return acc + "<td>" + JSON.stringify(curr) + "</td>";
-				}
-				}, "")
-			}</tr>`;
-		}, "")
-	}</tbody>`;
-	table += "</table>";
-	$(".editor").append(table);
+	state = newState;
+	state.onEntry();
 }
-$(document).ready(function () {
-	// Load Datasets
-	datasetNames.forEach(function (e) {
-		$.ajax({
-			dataType: "json",
-			async: false,
-			url: "data/" + e + ".json",
-			success: function(data) {
-				database[e] = data;
-			}
-		});
-		$('#datasetSelector').append($('<option>', {
-			value: e,
-			text: e
-		}));
+
+function makeServerRequest(url, data, success) {
+	$.ajax({
+		url: url,
+		method: "POST",
+		data: data,
+		success: success,
+		error: serverRequestError,
 	});
-	$('#datasetSelector').material_select();
-	console.log(database);
+}
+
+function showAlert(message) {
+	$("#alertModal p").html(message);
+	$("#alertModal").modal("open");
+}
+
+function serverRequestError(jqXHR, exception) {
+	var msg = '';
+	if (jqXHR.status === 0) {
+		msg = 'Not connect.\n Verify Network.';
+	} else if (jqXHR.status == 404) {
+		msg = 'Requested page not found. [404]';
+	} else if (jqXHR.status == 500) {
+		msg = 'Internal Server Error [500].';
+	} else if (exception === 'parsererror') {
+		msg = 'Requested JSON parse failed.';
+	} else if (exception === 'timeout') {
+		msg = 'Time out error.';
+	} else if (exception === 'abort') {
+		msg = 'Ajax request aborted.';
+	} else {
+		msg = jqXHR.responseText;
+	}
+	showAlert(msg);
+}
+
+function pathToName(path) {
+	return path.split("/").slice(-1)[0].replace(/\.[^/.]+$/, "");
+}
+
+function refreshDBList(data) {
+	var databases = data;
+	$("ul#databases").html("");
+	databases.forEach(function (element) {
+		// Parse Name
+		$("ul#databases").append(`<li><a href="#!" class="loadDatabase" data-path="${element}">${pathToName(element)}</a></li>`);
+	});
+	$("ul#databases").append('<li class="divider"></li>');
+	$("ul#databases").append('<li><a href="#createDatabaseModal" class="modal-trigger">Create Database</a></li>');
+	$("ul#databases").append('<li><a href="#addDatabaseModal" class="modal-trigger">Add Existing</a></li>');
+}
+
+$(document).ready(function () {
+	$('.modal').modal();
+	changeState(states.onload);
+	$("#addDatabaseButton").click(function () {
+		var path = $("#addDatabasePath").val();
+		if (path) {
+			makeServerRequest("/db-list/add", { path: path }, function (data) {
+				refreshDBList(data);
+			});
+		}
+	});
+	$("#createDatabaseButton").click(function () {
+		var path = $("#createDatabasePath").val();
+		if (path) {
+			makeServerRequest("/db-list/create", { path: path }, function (data) {
+				refreshDBList(data);
+			});
+		}
+	});
+	// Delegate to dynamically created a.loadDatabase items
+	$("ul#databases").on("click", "a.loadDatabase", function () {
+		var path = $(this).data("path");
+		makeServerRequest("/db/get", { path: path }, function (data) {
+			selectedDatabase = data;
+			changeState(states.hasSelectedDatabase);
+		});
+	});
 });

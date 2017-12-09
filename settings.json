@@ -1,0 +1,6 @@
+{
+  "databases": [
+    "./databases/lightbulb.lb",
+    "/mnt/d/test.lb"
+  ]
+}
