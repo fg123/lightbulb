@@ -37,6 +37,7 @@ app.post("/db-list", function (request, response) {
  * Requires: { path: pathToAdd }
  */
 app.post("/db-list/add", function (request, response) {
+	// TODO: Delegate this check into a helper function?
 	var path = request.body.path;
 	if (settings.databases.includes(path)) {
 		response.status(400);
@@ -90,14 +91,34 @@ app.post("/db/get", function (request, response) {
 		response.send(`<code>${path}</code> file not found. Path may be invalid!`);
 		return;
 	}
-	var content = JSON.parse(fs.readFileSync(path, "utf-8"));
-	content.path = path;
 	response.setHeader('Content-Type', 'application/json');
-	response.send(stringify(content));
+	response.send(stringify(database.getDatabase(path)));
 });
 
-
-
+/*
+ * Creates a class with the given name, same return as /db/get
+ * Requires: { path: pathToDb, name: newClassName }
+ */
+app.post("/db/classes/create", function(request, response) {
+	var path = request.body.path;
+	if (!settings.databases.includes(path)) {
+		// Really shouldn't happen...
+		response.status(400);
+		response.send("Unexpected invalid path!");
+		return;
+	}
+	// Check if class already exists
+	var content = database.getDatabase(path);
+	if (content.classes.some((x) => x.name == request.body.name)) {
+		response.status(400);
+		response.send("Class name already exists!");
+		return;
+	}
+	database.createClass(content, request.body.name);
+	database.writeDatabase(path, content);
+	response.setHeader('Content-Type', 'application/json');
+	response.send(stringify(content));	
+});
 
 
 

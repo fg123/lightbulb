@@ -21,7 +21,9 @@ var states = {
 			$('ul.tabs').tabs('select_tab', 'classes');
 
 			$("ul#classList").html(`<li>
-										<div class="collapsible-header"><i class="material-icons">create</i>Create</div>
+										<div class="collapsible-header" onclick="createClassModal()">
+											<i class="material-icons">create</i>Create
+										</div>
 									</li>`);
 			selectedDatabase.classes.forEach(function (element) {
 				$("ul#classList").append(`
@@ -44,6 +46,10 @@ var states = {
 		}
 	}
 };
+
+function createClassModal() {
+	$("#createClassModal").modal("open");
+}
 
 function changeState(newState) {
 	if (state) {
@@ -107,9 +113,23 @@ function refreshDBList(data) {
 $(document).ready(function () {
 	$('.modal').modal();
 	changeState(states.onload);
+
+	$("#createClassButton").click(function () {
+		var name = $("#createClassName").val();
+		var path = selectedDatabase.path;
+		if (name) {
+			$("#createClassName").val("");
+			makeServerRequest("/db/classes/create", { path: path, name: name }, 
+				function (data) {
+				selectedDatabase = data;
+				changeState(states.hasSelectedDatabase);
+			});
+		}
+	});
 	$("#addDatabaseButton").click(function () {
 		var path = $("#addDatabasePath").val();
 		if (path) {
+			$("#addDatabasePath").val("");
 			makeServerRequest("/db-list/add", { path: path }, function (data) {
 				refreshDBList(data);
 			});
@@ -118,6 +138,7 @@ $(document).ready(function () {
 	$("#createDatabaseButton").click(function () {
 		var path = $("#createDatabasePath").val();
 		if (path) {
+			$("#createDatabasePath").val("");
 			makeServerRequest("/db-list/create", { path: path }, function (data) {
 				refreshDBList(data);
 			});

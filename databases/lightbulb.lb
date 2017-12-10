@@ -1,18 +1,18 @@
 {
-	"name": "Lightbulb",
-	"version": "1.0",
-	"classes": [
-		{
-			"name": "Database",
-			"members": []
-		},
-		{
-			"name": "Database",
-			"members": []
-		},
-		{
-			"name": "Database",
-			"members": []
-		}
-	]
+  "name": "Lightbulb",
+  "version": "1.0",
+  "classes": [
+    {
+      "name": "Hello!",
+      "members": []
+    },
+    {
+      "name": "Structure",
+      "members": []
+    },
+    {
+      "name": "Unit",
+      "members": []
+    }
+  ]
 }
